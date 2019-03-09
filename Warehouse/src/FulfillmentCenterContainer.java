@@ -1,7 +1,7 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FulfillmentCenterContainer {
     private Map<String, FulfillmentCenter> fulfillmentCenters;
@@ -20,18 +20,11 @@ public class FulfillmentCenterContainer {
     }
 
     public List<FulfillmentCenter> findEmpty(){
-        List<FulfillmentCenter> emptyFulfillmentCenters = new ArrayList<>();
-        for(Map.Entry<String, FulfillmentCenter> element : fulfillmentCenters.entrySet()) {
-            if(element.getValue().items.isEmpty())
-                emptyFulfillmentCenters.add(element.getValue());
-        }
-        return emptyFulfillmentCenters;
+        return fulfillmentCenters.values().stream().filter(a -> a.items.isEmpty()).collect(Collectors.toList());
     }
 
     public void summary(){
-        for(Map.Entry<String, FulfillmentCenter> element : fulfillmentCenters.entrySet()) {
-            System.out.println("FulfillmentCenter name: " + element.getValue().name +
-                    "Percentage fill: " + element.getValue().getActualMass() / element.getValue().maxMass);
-        }
+        fulfillmentCenters.values().forEach(a -> System.out.println("FulfillmentCenter name: " + a.name +
+                "Percentage fill: " + a.getActualMass() / a.maxMass));
     }
 }

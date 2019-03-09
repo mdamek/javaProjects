@@ -1,11 +1,10 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class FulfillmentCenter {
-    public String name;
-    public List<Item> items;
-    public double maxMass;
+    String name;
+    List<Item> items;
+    double maxMass;
 
     FulfillmentCenter(String name, double maxMass){
         this.name = name;
@@ -26,33 +25,57 @@ public class FulfillmentCenter {
     }
 
     public void getProduct(Item item){
-        for (Item actualItem: items){
-            if(actualItem.equals(item)) {
-                actualItem.quantity --;
-                if(actualItem.quantity == 0) items.remove(item);
-                return;
+            for (Item actualItem: items){
+                if(actualItem.equals(item)) {
+                    actualItem.quantity --;
+                    if(actualItem.quantity == 0) items.remove(item);
+                    return;
+                }
             }
         }
-    }
 
     public void removeProduct(Item item){
-        for (Item actualItem: items){
-            if(actualItem.equals(item))
-                items.remove(item);
-        }
+                for (Item actualItem: items){
+                    if(actualItem.equals(item))
+                        items.remove(item);
+                }
+            }
+
+/* TODO
+    public Item search(String name){
+        Collections.sort(items.stream().map(a->new String(a.name)).collect(Collectors.toList()), new Comparator<String>() {
+            public int compare(String o1, String o2) {
+                return ;
+            });
+    }
+*/
+List<Item> searchPartial(String phrase){
+        return items.stream().filter(a -> a.name.contains(phrase)).collect(Collectors.toList());
     }
 
-    /*public Item search(String name){
+    int countByCondition(ItemCondition itemCondition){
+        return items.stream().filter(a -> a.state == itemCondition).collect(Collectors.toList()).size();
+    }
 
-    }*/
+    List<Item> sortByName(){
+        return items.stream().sorted().collect(Collectors.toList());
+    }
+
+    List<Item> sortByAmount(){
+        List<Item> sortedItems = new ArrayList<>(items);
+        sortedItems.sort(new QuantityComparator());
+        return sortedItems;
+    }
+
+    Item max(){
+        return Collections.max(items, new QuantityComparator());
+    }
 
     void summary(){
-        for (Item actualItem: items){
-            actualItem.print();
-        }
+        items.forEach(Item::print);
     }
 
-    public double getActualMass(){
+    double getActualMass(){
         return items.stream().mapToDouble(e -> e.mass).sum();
     }
 
@@ -65,7 +88,10 @@ public class FulfillmentCenter {
 
     private void IncreaseItemAmount(Item item){
         for (Item actualItem: items){
-            if(actualItem.name.equals(item.name)) actualItem.quantity++;
+            if(actualItem.name.equals(item.name)) {
+                actualItem.quantity++;
+                return;
+            }
         }
     }
 }
