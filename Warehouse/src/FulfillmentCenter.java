@@ -1,5 +1,6 @@
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FulfillmentCenter {
     String name;
@@ -41,14 +42,14 @@ public class FulfillmentCenter {
                 }
             }
 
-/* TODO
-    public Item search(String name){
-        Collections.sort(items.stream().map(a->new String(a.name)).collect(Collectors.toList()), new Comparator<String>() {
-            public int compare(String o1, String o2) {
-                return ;
-            });
+    public Item search(String key){
+        int index = Collections.binarySearch(items,
+                                             new Item(key, ItemCondition.NEW, 1,1),
+                                             Comparator.comparing(Item::getName));
+        return items.get(index);
     }
-*/
+
+
 List<Item> searchPartial(String phrase){
         return items.stream().filter(a -> a.name.contains(phrase)).collect(Collectors.toList());
     }

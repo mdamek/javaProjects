@@ -21,5 +21,13 @@ public class Main {
         List<Item> searchedPartial = center.searchPartial("a");
         int countedByCondition = center.countByCondition(ItemCondition.NEW);
         Item maxItem = center.max();
+
+        FulfillmentCenterContainer container = new FulfillmentCenterContainer();
+        container.addCenter("WH1", 1000);
+        container.addCenter("WH2", 500);
+        container.addCenter("WH3", 100);
+        container.fulfillmentCenters.get("WH1").addProduct(item1);
+        container.removeCenter("WH3");
+        container.summary();
     }
 }

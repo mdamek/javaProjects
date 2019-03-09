@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FulfillmentCenterContainer {
-    private Map<String, FulfillmentCenter> fulfillmentCenters;
+    public Map<String, FulfillmentCenter> fulfillmentCenters;
 
     public FulfillmentCenterContainer(){
         this.fulfillmentCenters = new HashMap<>();
@@ -24,7 +24,7 @@ public class FulfillmentCenterContainer {
     }
 
     public void summary(){
-        fulfillmentCenters.values().forEach(a -> System.out.println("FulfillmentCenter name: " + a.name +
-                "Percentage fill: " + a.getActualMass() / a.maxMass));
+        fulfillmentCenters.values().forEach(a -> System.out.println("FulfillmentCenter-name: " + a.name +
+                " Percentage fill: " + a.getActualMass() / a.maxMass * 100 + "%"));
     }
 }

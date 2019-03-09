@@ -18,6 +18,10 @@ public class Item implements Comparable<Item> {
                 " mass: " + this.mass + " quantity: " + this.quantity);
     }
 
+    public String getName(){
+        return this.name;
+    }
+
     @Override
     public int compareTo(Item item) {
         return this.name.compareTo(item.name);
