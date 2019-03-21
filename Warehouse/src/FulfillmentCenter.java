@@ -43,6 +43,8 @@ public class FulfillmentCenter {
             }
 
     public Item search(String key){
+
+        //return items.stream().filter(i -> i.name.equals(key)).findFirst().orElse(null);
         int index = Collections.binarySearch(items,
                                              new Item(key, ItemCondition.NEW, 1,1),
                                              Comparator.comparing(Item::getName));
