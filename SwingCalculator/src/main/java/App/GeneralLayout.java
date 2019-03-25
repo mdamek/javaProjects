@@ -130,7 +130,7 @@ public class GeneralLayout extends JFrame {
         MathematicalFormula e = new MathematicalFormula("e", "e");
         MathematicalFormula phi = new MathematicalFormula("Golden ratio", "[phi]");
 
-        MathematicalFormula exponentiation = new MathematicalFormula("Exponentiation", "^");
+        MathematicalFormula exponentiation = new MathematicalFormula("Add", "+");
         MathematicalFormula factorial = new MathematicalFormula("Factorial", "!");
         MathematicalFormula modulo = new MathematicalFormula("Modulo", "#");
         MathematicalFormula lastResult = new MathematicalFormula( "Last result", "" );
