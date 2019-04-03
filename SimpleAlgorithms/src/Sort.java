@@ -1,5 +1,5 @@
 public class Sort {
-    public static void Insert(int arr[])
+    public static void  Insert(int arr[])
     {
         int n = arr.length;
         for (int i = 1; i < n; ++i) {

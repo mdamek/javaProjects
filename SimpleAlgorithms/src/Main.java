@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 public class Main {
 
-    public static void main(String[] args) throws ElementNotExistException {
+    public static void main(String[] args) throws ElementNotExistException, TooBigNumberException, TooLongListException {
         //1
         Random random = new Random();
         Matrix m1 = new Matrix( 3,4 );

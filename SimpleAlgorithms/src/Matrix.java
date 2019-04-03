@@ -1,9 +1,10 @@
 import java.util.*;
 
 public class Matrix{
-    private Integer[][] elements;
+    public Integer[][] elements;
     private int widthX;
     private int heightY;
+
 
     Matrix(int widthX, int heightY) {
         this.widthX = widthX;
