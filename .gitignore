@@ -10,6 +10,7 @@
 *.log
 *.idea
 *.iml
+*.xml
 # BlueJ files
 *.ctxt
 
