@@ -9,8 +9,5 @@
         <module name="SwingCalculator" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="SwingCalculator" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>

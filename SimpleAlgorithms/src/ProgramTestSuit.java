@@ -4,7 +4,9 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-        AlgorithmsTest.class,
+        FindSubstringTest.class,
+        FindSumsTest.class,
+        FindMinAlgorithmTest.class,
         SortTest.class,
         MatrixTest.class,
         MyExceptionsTest.class,
