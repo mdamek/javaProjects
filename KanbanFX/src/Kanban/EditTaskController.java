@@ -1,7 +1,5 @@
 package Kanban;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -9,23 +7,15 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class TasksController implements Initializable {
-
+public class EditTaskController implements Initializable {
     public ChoiceBox<String> priority;
     public TextField title;
     public DatePicker date;
     public TextArea description;
-    public Button addTaskButton;
+    public Button editTaskButton;
+    public static Task taskForEdit;
 
-    private ObservableList<String> priorities = FXCollections.observableArrayList(
-            Priority.LOW.toString(), Priority.MEDIUM.toString(), Priority.HEIGHT.toString());
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        priority.setItems( priorities );
-    }
-
-    public void addNewTask() {
+    public void editTask() {
         try{
             if(this.title.getText().equals( "" ))
                 throw new IllegalArgumentException( "Title can not be empty!" );
@@ -39,20 +29,28 @@ public class TasksController implements Initializable {
             if(this.description.getText().equals( "" ))
                 throw new IllegalArgumentException( "Description can not be empty!" );
             String description = this.description.getText();
-            Task task = new Task( title, priority, date, description );
-            TasksManager.toDoTasks.add( task );
-            Stage stage = (Stage) addTaskButton.getScene().getWindow();
+            Task newTask = new Task( title, priority, date, description );
+            Stage stage = (Stage) editTaskButton.getScene().getWindow();
+            TasksManager.EditTask( taskForEdit, newTask );
             stage.close();
 
         }catch (IllegalArgumentException e ){
             AlertAboutErrors( e.getMessage() );
         }
     }
-
     private void AlertAboutErrors(String errorContent){
         Alert alert = new Alert( Alert.AlertType.ERROR);
         alert.setTitle("Argument error");
         alert.setContentText(errorContent);
         alert.showAndWait();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        title.setText( taskForEdit.Title );
+        priority.setItems( AddTaskController.priorities );
+        priority.setValue( taskForEdit.Priority.toString() );
+        description.setText( taskForEdit.Description );
+        date.setValue(taskForEdit.Date);
     }
 }
