@@ -46,7 +46,9 @@ public class KanbanController implements Initializable {
             secondStage.setScene(secondScene);
             secondStage.show();
         }
-        catch (IOException ignored){}
+        catch (IOException e){
+            System.out.println( e.getMessage() );
+        }
     }
 
     @Override
@@ -69,6 +71,8 @@ public class KanbanController implements Initializable {
             return toDoList.getSelectionModel().getSelectedItem();
         else if(inProgressList.getSelectionModel().getSelectedItem() != null)
             return inProgressList.getSelectionModel().getSelectedItem();
+        else if(doneList.getSelectionModel().getSelectedItem() != null)
+            return doneList.getSelectionModel().getSelectedItem();
         return null;
     }
 
