@@ -1,5 +1,6 @@
 package Kanban;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -7,10 +8,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import java.io.IOException;
+import javafx.util.converter.LocalDateStringConverter;
+
+import javax.imageio.stream.FileImageInputStream;
+import java.io.*;
 import java.net.URL;
-import java.util.ResourceBundle;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class KanbanController implements Initializable {
 
@@ -103,5 +110,140 @@ public class KanbanController implements Initializable {
                 contextMenu.getItems().addAll(item1, item2);
                 contextMenu.show(toDoList, mouseEvent.getScreenX(), mouseEvent.getScreenY());
         }
+    }
+    //actions
+    public void save() {
+        Map<String, String> extensions = new HashMap<>(  );
+        extensions.put( "Text file", "*.txt" );
+        File fileToSave = openFileChooser("Save file", extensions);
+        try
+        {
+            FileOutputStream fos = new FileOutputStream(fileToSave);
+             ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(TasksManager.GetToSerialization());
+            oos.close();
+            fos.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+    }
+
+    public void open() {
+        Map<String, String> extensions = new HashMap<>(  );
+        extensions.put( "Text file", "*.txt" );
+        File fileToOpen = openFileChooser("Open file", extensions);
+        ObjectInputStream inputStream = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream( fileToOpen );
+            inputStream = new ObjectInputStream(fileInputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            SerializableCollection deserialized = (SerializableCollection) inputStream.readObject();
+            TasksManager.Deserialize(deserialized);
+        }catch (Exception e){
+            System.out.println( e.getMessage() );
+        }
+
+    }
+
+    public void exportAction() {
+        Map<String, String> extensions = new HashMap<>(  );
+        extensions.put( "CSV file", "*.csv" );
+        File fileToExport = openFileChooser("Export file", extensions);
+        try
+        {
+            FileWriter fileWriter = new FileWriter( fileToExport );
+            List<Task> toDoTasks = TasksManager.toDoTasks;
+            for ( Task toDoTask : toDoTasks ) {
+
+                fileWriter.append("\"" + toDoTask.Title + "\"" );
+                fileWriter.append( "," );
+                fileWriter.append("\"" + toDoTask.Priority.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + toDoTask.Date.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + toDoTask.Description + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + "toDoTasks" + "\"");
+                fileWriter.append( "\\n" );
+            }
+            List<Task> inProgressTasks = TasksManager.inProgressTasks;
+            for ( Task inProgressTask : inProgressTasks ) {
+                fileWriter.append("\"" + inProgressTask.Title + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + inProgressTask.Priority.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + inProgressTask.Date.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + inProgressTask.Description + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + "inProgressTasks" + "\"");
+                fileWriter.append( "\\n" );
+            }
+            List<Task> doneTasks = TasksManager.doneTasks;
+            for ( Task doneTask : doneTasks ) {
+                fileWriter.append("\"" + doneTask.Title + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + doneTask.Priority.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + doneTask.Date.toString() + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + doneTask.Description + "\"");
+                fileWriter.append( "," );
+                fileWriter.append("\"" + "doneTasks" + "\"");
+                fileWriter.append( "\\n" );
+            }
+            fileWriter.flush();
+            fileWriter.close();
+        }
+        catch (IOException ioe)
+        {
+            ioe.printStackTrace();
+        }
+
+    }
+
+    public void importAction() {
+        Map<String, String> extensions = new HashMap<>(  );
+        extensions.put( "CSV file", "*.csv" );
+        File importFile = openFileChooser("Export file", extensions);
+        try (BufferedReader br = new BufferedReader(new FileReader( importFile ))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                final LocalDate dt = LocalDate.parse( values[2],  dtf);
+                if(values[4].equals( "toDoTasks" )){
+                    TasksManager.toDoTasks.add( new Task( values[0], Priority.valueOf( values[1] ), dt, values[3] ) );
+                }
+                if(values[4].equals( "inProgressTasks" )){
+                    TasksManager.inProgressTasks.add( new Task( values[0], Priority.valueOf( values[1] ), dt, values[3] ) );
+                }
+                if(values[4].equals( "doneTasks" )){
+                    TasksManager.doneTasks.add( new Task( values[0], Priority.valueOf( values[1] ), dt, values[3] ) );
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private File openFileChooser(String title, Map<String, String> extensions){
+        FileChooser fileChooser = new FileChooser();
+        for (String i : extensions.keySet()) {
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter( i, extensions.get( i ) ));
+        }
+        fileChooser.setTitle( title );
+        return fileChooser.showOpenDialog(null);
+    }
+
+
+    public void GenerateTasks() {
+        TasksManager.GenerateTasks();
     }
 }

@@ -10,9 +10,9 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Kanban.KanbanController">
-    <ListView fx:id="toDoList" layoutX="14.0" layoutY="88.0" prefHeight="500.0" prefWidth="200.0" onMouseClicked="#openDialogWindow"/>
-    <ListView fx:id="inProgressList" layoutX="250.0" layoutY="88.0" prefHeight="500.0" prefWidth="200.0" onMouseClicked="#openDialogWindow"/>
-    <ListView fx:id="doneList" layoutX="486.0" layoutY="88.0" prefHeight="500.0" prefWidth="200.0" onMouseClicked="#openDialogWindow"/>
+    <ListView fx:id="toDoList" layoutX="14.0" layoutY="88.0" onMouseClicked="#openDialogWindow" prefHeight="500.0" prefWidth="200.0" />
+    <ListView fx:id="inProgressList" layoutX="250.0" layoutY="88.0" onMouseClicked="#openDialogWindow" prefHeight="500.0" prefWidth="200.0" />
+    <ListView fx:id="doneList" layoutX="486.0" layoutY="88.0" onMouseClicked="#openDialogWindow" prefHeight="500.0" prefWidth="200.0" />
     <Label layoutX="84.0" layoutY="49.0" text="TO DO">
         <font>
           <Font size="20.0" />
@@ -30,17 +30,23 @@
     </Label>
     <MenuBar prefHeight="25.0" prefWidth="700.0">
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="Close" onAction="#closeProgram"/>
+            <MenuItem mnemonicParsing="false" onAction="#closeProgram" text="Close" />
         </Menu>
         <Menu mnemonicParsing="false" text="About">
-            <MenuItem mnemonicParsing="false" text="Show" onAction="#showAbout"/>
+            <MenuItem mnemonicParsing="false" onAction="#showAbout" text="Show" />
+        </Menu>
+        <Menu mnemonicParsing="false" text="Actions">
+            <MenuItem mnemonicParsing="false" onAction="#save" text="Save" />
+            <MenuItem mnemonicParsing="false" onAction="#open" text="Open" />
+            <MenuItem mnemonicParsing="false" onAction="#exportAction" text="Export" />
+            <MenuItem mnemonicParsing="false" onAction="#importAction" text="Import" />
         </Menu>
     </MenuBar>
-    <Button fx:id="newTaskViewButton" layoutX="296.0" layoutY="638.0" mnemonicParsing="false"
-            onAction="#openNewTaskWindow" prefHeight="38.0" prefWidth="108.0" text="Add new task" textOverrun="CENTER_ELLIPSIS">
+    <Button fx:id="newTaskViewButton" layoutX="296.0" layoutY="638.0" mnemonicParsing="false" onAction="#openNewTaskWindow" prefHeight="38.0" prefWidth="108.0" text="Add new task" textOverrun="CENTER_ELLIPSIS">
         <font>
             <Font size="14.0" />
         </font>
     </Button>
+    <Button layoutX="74.0" layoutY="645.0" onAction="#GenerateTasks" text="Generate tasks" />
    <Button fx:id="moveTaskButton" layoutX="334.0" layoutY="600.0" mnemonicParsing="false" onAction="#moveTask" text="&gt;&gt;" />
 </AnchorPane>

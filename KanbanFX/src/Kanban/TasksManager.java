@@ -1,7 +1,8 @@
 package Kanban;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class TasksManager {
     public static ObservableList<Task> toDoTasks = FXCollections.observableArrayList(  );
@@ -9,20 +10,18 @@ public class TasksManager {
     public static ObservableList<Task> doneTasks = FXCollections.observableArrayList(  );
 
     public static void MoveTask(Task task){
-        for ( int i = 0; i < toDoTasks.size(); i++ ){
-            if(toDoTasks.get( i ).Title.equals( task.Title )) {
-                Task taskToMove = toDoTasks.get( i );
-                toDoTasks.remove( i );
-                inProgressTasks.add( taskToMove );
-                return;
-            }
-        }
         for ( int i = 0; i < inProgressTasks.size(); i++ ){
             if(inProgressTasks.get( i ).Title.equals( task.Title )) {
                 Task taskToMove = inProgressTasks.get( i );
                 inProgressTasks.remove( i );
                 doneTasks.add( taskToMove );
-                return;
+            }
+        }
+        for ( int i = 0; i < toDoTasks.size(); i++ ){
+            if(toDoTasks.get( i ).Title.equals( task.Title )) {
+                Task taskToMove = toDoTasks.get( i );
+                toDoTasks.remove( i );
+                inProgressTasks.add( taskToMove );
             }
         }
     }
@@ -39,7 +38,38 @@ public class TasksManager {
         Replace( oldTask, newTask, inProgressTasks );
         Replace( oldTask, newTask, doneTasks );
     }
+    public static void GenerateTasks(){
+        toDoTasks.add( new Task( "Task1", Priority.LOW, LocalDate.now(), "ABCDE") );
+        toDoTasks.add( new Task( "Task2", Priority.LOW, LocalDate.now(), "ABCDE") );
+        toDoTasks.add( new Task( "Task3", Priority.LOW, LocalDate.now(), "ABCDE") );
+        inProgressTasks.add( new Task( "Task4", Priority.LOW, LocalDate.now(), "ABCDE") );
+        inProgressTasks.add( new Task( "Task5", Priority.LOW, LocalDate.now(), "ABCDE") );
+        inProgressTasks.add( new Task( "Task6", Priority.LOW, LocalDate.now(), "ABCDE") );
+        doneTasks.add( new Task( "Task7", Priority.LOW, LocalDate.now(), "ABCDE") );
+        doneTasks.add( new Task( "Task8", Priority.LOW, LocalDate.now(), "ABCDE") );
+        doneTasks.add( new Task( "Task9", Priority.LOW, LocalDate.now(), "ABCDE") );
 
+
+    }
+    public static SerializableCollection GetToSerialization (){
+        return new SerializableCollection(
+                convertObservableCollectionToArrayList(toDoTasks),
+                convertObservableCollectionToArrayList(inProgressTasks),
+                convertObservableCollectionToArrayList(doneTasks));
+    }
+
+    public static void Deserialize(SerializableCollection serializableCollection){
+        toDoTasks.removeAll(  );
+        inProgressTasks.removeAll(  );
+        doneTasks.removeAll(  );
+        toDoTasks.addAll( serializableCollection.toDoList );
+        inProgressTasks.addAll( serializableCollection.toDoList );
+        doneTasks.addAll( serializableCollection.toDoList );
+    }
+
+    private static ArrayList<Task> convertObservableCollectionToArrayList(ObservableList<Task> observableCollection){
+        return new ArrayList<>( observableCollection );
+    }
     private static void Replace(Task oldTask, Task newTask, ObservableList<Task> tasks) {
         for ( int i = 0; i < tasks.size();i++ ) {
             if (tasks.get( i ).Title.equals( oldTask.Title )) {
