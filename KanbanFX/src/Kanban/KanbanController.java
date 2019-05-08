@@ -1,6 +1,4 @@
 package Kanban;
-
-import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -10,9 +8,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.converter.LocalDateStringConverter;
-
-import javax.imageio.stream.FileImageInputStream;
 import java.io.*;
 import java.net.URL;
 import java.time.LocalDate;
@@ -115,7 +110,7 @@ public class KanbanController implements Initializable {
     public void save() {
         Map<String, String> extensions = new HashMap<>(  );
         extensions.put( "Text file", "*.txt" );
-        File fileToSave = openFileChooser("Save file", extensions);
+        File fileToSave = openFileChooser("Save file", extensions, ChooserType.SAVE);
         try
         {
             FileOutputStream fos = new FileOutputStream(fileToSave);
@@ -133,7 +128,7 @@ public class KanbanController implements Initializable {
     public void open() {
         Map<String, String> extensions = new HashMap<>(  );
         extensions.put( "Text file", "*.txt" );
-        File fileToOpen = openFileChooser("Open file", extensions);
+        File fileToOpen = openFileChooser("Open file", extensions, ChooserType.LOAD);
         ObjectInputStream inputStream = null;
         try {
             FileInputStream fileInputStream = new FileInputStream( fileToOpen );
@@ -142,6 +137,7 @@ public class KanbanController implements Initializable {
             e.printStackTrace();
         }
         try {
+            assert inputStream != null;
             SerializableCollection deserialized = (SerializableCollection) inputStream.readObject();
             TasksManager.Deserialize(deserialized);
         }catch (Exception e){
@@ -153,49 +149,49 @@ public class KanbanController implements Initializable {
     public void exportAction() {
         Map<String, String> extensions = new HashMap<>(  );
         extensions.put( "CSV file", "*.csv" );
-        File fileToExport = openFileChooser("Export file", extensions);
+        File fileToExport = openFileChooser("Export file", extensions, ChooserType.SAVE);
         try
         {
             FileWriter fileWriter = new FileWriter( fileToExport );
             List<Task> toDoTasks = TasksManager.toDoTasks;
             for ( Task toDoTask : toDoTasks ) {
 
-                fileWriter.append("\"" + toDoTask.Title + "\"" );
+                fileWriter.append(toDoTask.Title);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + toDoTask.Priority.toString() + "\"");
+                fileWriter.append(toDoTask.Priority.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + toDoTask.Date.toString() + "\"");
+                fileWriter.append(toDoTask.Date.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + toDoTask.Description + "\"");
+                fileWriter.append(toDoTask.Description);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + "toDoTasks" + "\"");
-                fileWriter.append( "\\n" );
+                fileWriter.append("toDoTasks");
+                fileWriter.append( System.lineSeparator() );
             }
             List<Task> inProgressTasks = TasksManager.inProgressTasks;
             for ( Task inProgressTask : inProgressTasks ) {
-                fileWriter.append("\"" + inProgressTask.Title + "\"");
+                fileWriter.append(inProgressTask.Title);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + inProgressTask.Priority.toString() + "\"");
+                fileWriter.append(inProgressTask.Priority.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + inProgressTask.Date.toString() + "\"");
+                fileWriter.append(inProgressTask.Date.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + inProgressTask.Description + "\"");
+                fileWriter.append(inProgressTask.Description);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + "inProgressTasks" + "\"");
-                fileWriter.append( "\\n" );
+                fileWriter.append("inProgressTasks");
+                fileWriter.append( System.lineSeparator() );
             }
             List<Task> doneTasks = TasksManager.doneTasks;
             for ( Task doneTask : doneTasks ) {
-                fileWriter.append("\"" + doneTask.Title + "\"");
+                fileWriter.append(doneTask.Title);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + doneTask.Priority.toString() + "\"");
+                fileWriter.append(doneTask.Priority.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + doneTask.Date.toString() + "\"");
+                fileWriter.append(doneTask.Date.toString());
                 fileWriter.append( "," );
-                fileWriter.append("\"" + doneTask.Description + "\"");
+                fileWriter.append(doneTask.Description);
                 fileWriter.append( "," );
-                fileWriter.append("\"" + "doneTasks" + "\"");
-                fileWriter.append( "\\n" );
+                fileWriter.append("doneTasks");
+                fileWriter.append( System.lineSeparator() );
             }
             fileWriter.flush();
             fileWriter.close();
@@ -210,7 +206,7 @@ public class KanbanController implements Initializable {
     public void importAction() {
         Map<String, String> extensions = new HashMap<>(  );
         extensions.put( "CSV file", "*.csv" );
-        File importFile = openFileChooser("Export file", extensions);
+        File importFile = openFileChooser("Export file", extensions, ChooserType.LOAD);
         try (BufferedReader br = new BufferedReader(new FileReader( importFile ))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -233,13 +229,16 @@ public class KanbanController implements Initializable {
 
     }
 
-    private File openFileChooser(String title, Map<String, String> extensions){
+    private File openFileChooser(String title, Map<String, String> extensions, ChooserType chooserType){
         FileChooser fileChooser = new FileChooser();
         for (String i : extensions.keySet()) {
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter( i, extensions.get( i ) ));
         }
         fileChooser.setTitle( title );
-        return fileChooser.showOpenDialog(null);
+        if(chooserType == ChooserType.SAVE)
+            return fileChooser.showSaveDialog( null );
+        else
+            return fileChooser.showOpenDialog( null );
     }
 
 
