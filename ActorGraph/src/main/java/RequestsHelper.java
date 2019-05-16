@@ -5,7 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class RequestsHelper {
@@ -22,7 +21,7 @@ public class RequestsHelper {
         return new Actor( jsonObj.get( "id" ).toString(), jsonObj.get( "name" ).toString() );
     }
 
-    public static HashMap<Actor, Movie> FetchActorsFromAllMovies(Actor actor) throws IOException {
+    public static ArrayList<Association> FetchActorsFromAllMovies(Actor actor) throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url( "https://java.kisim.eu.org/actors/"+actor.id+"/movies")
@@ -31,14 +30,17 @@ public class RequestsHelper {
         String resString = response.body().string();
         JSONArray allMovies = new JSONArray( resString );
 
-        HashMap<Actor, Movie> actorsAndMovies = new HashMap<>(  );
+        ArrayList<Association> actorsAndMovies = new ArrayList<>(  );
 
         for ( int i = 0; i < allMovies.length(); i++ ){
             JSONObject movieObject = (JSONObject)allMovies.get( i );
             Movie actualMovie = new Movie( movieObject.get( "id" ).toString(), movieObject.get( "title" ).toString() );
             List<Actor> actors = GetActorsForMovie(movieObject.get( "id" ).toString());
             for ( Actor actualActor : actors ) {
-                actorsAndMovies.put( actualActor, actualMovie );
+                actorsAndMovies.add(
+                        new Association(
+                        new Actor( actualActor.id, actualActor.name ),
+                        new Movie( actualMovie.id, actualMovie.title )) );
             }
         }
         return actorsAndMovies;

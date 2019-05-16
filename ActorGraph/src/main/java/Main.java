@@ -5,16 +5,12 @@ import org.jgrapht.graph.SimpleGraph;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        //BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        //System.out.print("Enter first actor");
-        //String firstActor = br.readLine();
-        //System.out.print("Enter second actor:");
-        //String secondActor = br.readLine();
-        String firstActorName = "Kit Harington";
-        String secondActorName = "Bruce Willis";
+        String firstActorName = "Jason Statham";
+        String secondActorName = "Jason Batemanf";
         Actor firstActor = null;
         Actor secondActor = null;
         try {
@@ -25,7 +21,7 @@ public class Main {
             System.out.println( e.getMessage() );
         }
         Graph<Actor, Movie> graph = new SimpleGraph<>( Movie.class);
-        HashMap<Actor, Movie> actorMovieHashMap;
+        List<Association> actorMovieHashMap;
         List<Actor> globalActors = new ArrayList<>(  );
         globalActors.add( firstActor );
 
@@ -35,12 +31,11 @@ public class Main {
                 graph = FillGraph( graph, actorMovieHashMap, actor);
                 if(IsThereActor( actorMovieHashMap, secondActor ))
                     break;
-                List<Actor> actors = new ArrayList<>(actorMovieHashMap.keySet());
+                List<Actor> actors = actorMovieHashMap.stream()
+                        .map( element -> new Actor( element.actor.id, element.actor.name ) ).collect( Collectors.toList() );
                 globalActors.addAll( actors );
                 globalActors.remove( 0 );
         }
-
-        Set<Actor> vertices = graph.vertexSet();
         BellmanFordShortestPath<Actor, Movie> bfsp = new BellmanFordShortestPath<>(graph);
         GraphPath<Actor, Movie> shortestPath = bfsp.getPath(firstActor, secondActor);
         List<Movie> edges = shortestPath.getEdgeList();
@@ -53,16 +48,20 @@ public class Main {
         }
     }
 
-    private static boolean IsThereActor(HashMap<Actor, Movie> actorMovieHashMap, Actor actorToSearch){
-        return actorMovieHashMap.containsKey( actorToSearch );
+    private static boolean IsThereActor(List<Association> actorsMovies, Actor actorToSearch){
+        for ( Association actual : actorsMovies ) {
+            if(actual.actor.id.equals( actorToSearch.id ))
+                return true;
+        }
+        return false;
     }
 
-    private static Graph<Actor, Movie> FillGraph(Graph<Actor, Movie> graph, HashMap<Actor, Movie> actorMovieHashMap, Actor actualActor){
-        actorMovieHashMap.remove( actualActor );
+    private static Graph<Actor, Movie> FillGraph(Graph<Actor, Movie> graph, List<Association> actorsMovies, Actor actualActor){
+        actorsMovies.removeIf( element -> element.actor.id.equals( actualActor.id ) );
         graph.addVertex( actualActor );
-        for(Map.Entry<Actor, Movie> entry : actorMovieHashMap.entrySet()) {
-            graph.addVertex( entry.getKey() );
-            graph.addEdge( actualActor, entry.getKey(), entry.getValue() );
+        for ( Association actual : actorsMovies ) {
+            graph.addVertex( actual.actor );
+            graph.addEdge( actualActor, actual.actor, actual.movie );
         }
         return graph;
     }
