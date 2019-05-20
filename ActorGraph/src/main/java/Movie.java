@@ -1,6 +1,6 @@
 import java.util.Objects;
 
-public class Movie {
+public class Movie implements Cloneable{
     public String id;
     public String title;
 
@@ -25,5 +25,10 @@ public class Movie {
     @Override
     public String toString() {
         return title +" (" +id+ ")";
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

@@ -8,9 +8,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, CloneNotSupportedException {
         String firstActorName = "Jason Statham";
-        String secondActorName = "Jason Batemanf";
+        String secondActorName = "Rainn Wilson";
         Actor firstActor = null;
         Actor secondActor = null;
         try {
@@ -21,21 +21,21 @@ public class Main {
             System.out.println( e.getMessage() );
         }
         Graph<Actor, Movie> graph = new SimpleGraph<>( Movie.class);
-        List<Association> actorMovieHashMap;
-        List<Actor> globalActors = new ArrayList<>(  );
-        globalActors.add( firstActor );
+        Queue<Actor> actorQueue = new LinkedList<>();
+        actorQueue.add( firstActor );
 
-        for ( int i = 0; i < globalActors.size(); i++ ){
-            Actor actor = globalActors.get( i );
-                actorMovieHashMap = RequestsHelper.FetchActorsFromAllMovies(actor);
-                graph = FillGraph( graph, actorMovieHashMap, actor);
-                if(IsThereActor( actorMovieHashMap, secondActor ))
-                    break;
-                List<Actor> actors = actorMovieHashMap.stream()
-                        .map( element -> new Actor( element.actor.id, element.actor.name ) ).collect( Collectors.toList() );
-                globalActors.addAll( actors );
-                globalActors.remove( 0 );
+
+        while (!actorQueue.isEmpty()){
+            Actor actor = actorQueue.poll();
+            List<Association> associations = RequestsHelper.FetchActorsFromAllMovies(actor);
+            graph = FillGraph( graph, associations, actor);
+            if(IsThereActor( associations, secondActor ))
+                break;
+            List<Actor> actors = associations.stream()
+                    .map( element -> new Actor( element.actor.id, element.actor.name ) ).collect( Collectors.toList() );
+            actorQueue.addAll( actors );
         }
+
         BellmanFordShortestPath<Actor, Movie> bfsp = new BellmanFordShortestPath<>(graph);
         GraphPath<Actor, Movie> shortestPath = bfsp.getPath(firstActor, secondActor);
         List<Movie> edges = shortestPath.getEdgeList();
@@ -56,12 +56,13 @@ public class Main {
         return false;
     }
 
-    private static Graph<Actor, Movie> FillGraph(Graph<Actor, Movie> graph, List<Association> actorsMovies, Actor actualActor){
+    private static Graph<Actor, Movie> FillGraph(Graph<Actor, Movie> graph, List<Association> actorsMovies, Actor actualActor)
+            throws CloneNotSupportedException {
         actorsMovies.removeIf( element -> element.actor.id.equals( actualActor.id ) );
         graph.addVertex( actualActor );
         for ( Association actual : actorsMovies ) {
             graph.addVertex( actual.actor );
-            graph.addEdge( actualActor, actual.actor, actual.movie );
+            graph.addEdge( actualActor, actual.actor, (Movie) actual.movie.clone() );
         }
         return graph;
     }
